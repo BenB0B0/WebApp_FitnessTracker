@@ -1,13 +1,13 @@
-## __Project Uses__
+## __Project Tech__
 `Flask (framework), Jinja (template engine), sqlalchemy (database)`
 
-> Personal reminders below
-### git:
+## __Project Reminders and Todos__
+## GIT:
 - git add .
 - git commit -m "blah"
 - git push -u origin master
 
-### TODO:
+## TODO:
 - create config file - add to gitignore
 - add routines
 - mobilize
