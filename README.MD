@@ -1,3 +1,6 @@
+*Project Uses*
+> Flask (framework), Jinja (template engine), sqlalchemy (database)
+
 > git reminder:
 - git add .
 - git commit -m "blah"
