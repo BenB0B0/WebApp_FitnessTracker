@@ -1,5 +1,5 @@
-*Project Uses*
-> Flask (framework), Jinja (template engine), sqlalchemy (database)
+__Project Uses__
+`Flask (framework), Jinja (template engine), sqlalchemy (database)`
 
 > git reminder:
 - git add .
