@@ -1,5 +1,3 @@
-### PERSONAL REMINDERS ###
-
 > git reminder:
 - git add .
 - git commit -m "blah"

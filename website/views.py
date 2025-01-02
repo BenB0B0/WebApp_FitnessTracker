@@ -4,6 +4,10 @@ from .models import Workout
 from datetime import datetime, date
 from . import db
 import json
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 views = Blueprint('views', __name__)
 
@@ -11,45 +15,70 @@ views = Blueprint('views', __name__)
 @login_required
 def home():
     today = date.today()
-    # Get the page number from the URL (default is 1)
-    page = request.args.get('page', 1, type=int)
-    workouts_per_page = 6  # Display 6 workouts per page
-    
-    # Query the workouts for the current user and apply pagination
-    workouts = Workout.query.filter_by(user_id=current_user.id).order_by(Workout.date.desc()).paginate(page=page, per_page=workouts_per_page)
+    # Get page numbers for past and upcoming workouts separately
+    past_page = request.args.get("past_page", 1, type=int)
+    upcoming_page = request.args.get("upcoming_page", 1, type=int)
+    workouts_per_page = int(os.getenv("PAGINATION_SIZE", 6))  # Default to 6 if not set in .env
 
-    if request.method == 'POST': 
-        workout_name = request.form.get('workout_name')
-        workout_length = request.form.get('workout_length')
-        workout_url = request.form.get('workout_url')
-        workout_date = request.form.get('workout_date')
-        
+    # Query for past workouts (date < today) with pagination
+    past_workouts = (
+        Workout.query.filter(
+            Workout.user_id == current_user.id,
+            Workout.date < today
+        )
+        .order_by(Workout.date.desc())
+        .paginate(page=past_page, per_page=workouts_per_page)
+    )
+
+    # Query for upcoming workouts (date >= today) with pagination
+    upcoming_workouts = (
+        Workout.query.filter(
+            Workout.user_id == current_user.id,
+            Workout.date >= today
+        )
+        .order_by(Workout.date.asc())
+        .paginate(page=upcoming_page, per_page=workouts_per_page)
+    )
+
+    # Handle form submission
+    if request.method == "POST":
+        workout_name = request.form.get("workout_name")
+        workout_length = request.form.get("workout_length")
+        workout_url = request.form.get("workout_url")
+        workout_date = request.form.get("workout_date")
+
         if workout_date:
-            workout_date = datetime.strptime(workout_date, '%Y-%m-%d').date()
+            workout_date = datetime.strptime(workout_date, "%Y-%m-%d").date()
         else:
             workout_date = None
 
-        # Get the length unit from the radio buttons (either 'minutes' or 'miles')
-        length_unit = request.form.get('length_unit')  # This will be either 'minutes' or 'miles'
-        is_minutes = length_unit == 'minutes'  # True if 'minutes', False if 'miles'
+        length_unit = request.form.get("length_unit")  # "minutes" or "miles"
+        is_minutes = length_unit == "minutes"
 
-        # You can add validation for the inputs if needed
         if len(workout_name) < 1 or len(workout_length) < 1:
-            flash('Workout name and length cannot be empty!', category='error') 
+            flash("Workout name and length cannot be empty!", category="error")
         else:
-            new_workout = Workout(name=workout_name, 
-                                  length=workout_length, 
-                                  url=workout_url, 
-                                  user_id=current_user.id,
-                                  is_minutes=is_minutes,
-                                  date=workout_date)  # Store the length unit as boolean
-            db.session.add(new_workout)  # Add workout to the database 
+            new_workout = Workout(
+                name=workout_name,
+                length=workout_length,
+                url=workout_url,
+                user_id=current_user.id,
+                is_minutes=is_minutes,
+                date=workout_date,
+            )
+            db.session.add(new_workout)
             db.session.commit()
-            flash('Workout added!', category='success')
-            return redirect(url_for('views.home'))
+            flash("Workout added!", category="success")
+            return redirect(url_for("views.home"))
 
-    # Pass the workouts pagination object to the template
-    return render_template("home.html", user=current_user, workouts=workouts, today=today)
+    # Pass the pagination objects to the template
+    return render_template(
+        "home.html",
+        user=current_user,
+        past_workouts=past_workouts,
+        upcoming_workouts=upcoming_workouts,
+        today=today,
+    )
 
 @views.route('/delete-workout', methods=['POST'])
 def delete_workout():  

@@ -1,9 +1,9 @@
 <div class="row" style="border: 1px solid #ccc; padding: 10px;">
-    {% for workout in workouts.items|sort(attribute='date') %} {% if workout.date >= today %}
+    {% for workout in upcoming_workouts.items %} 
     <div class="col-md-4" style="padding: 10px;">
         <div class="card position-relative">
             <!-- Top-right date -->
-            <span class="text-muted position-absolute" style="top: 10px; right: 10px; font-size: 0.7rem;">
+            <span class="text-muted position-absolute" style="top: 10px; right: 10px; font-size: 0.8rem;">
                 {{ workout.date }}
             </span>
             <!-- Card header -->
@@ -36,7 +36,7 @@
             </button>
         </div>
     </div>
-    {% endif %} {% endfor %}
+    {% endfor %}
 
     <!-- Pagination Controls and Add Workout Form in the same row -->
     <div class="col-12 d-flex justify-content-between align-items-start">
@@ -49,16 +49,19 @@
             </a>
         </div>
     
-        <!-- Pagination Controls -->
+        <!-- Pagination Controls for Upcoming Workouts -->
         <div class="text-right">
-            {% if workouts.has_prev %}
-                <a style="padding-right:5px" href="{{ url_for('views.home', page=workouts.prev_num) }}">Previous</a>
+            {% if upcoming_workouts.has_prev %}
+                <a style="padding-right:5px" 
+                href="{{ url_for('views.home', past_page=past_workouts.page, upcoming_page=upcoming_workouts.prev_num) }}">Previous</a>
             {% endif %}
-            <span>Page {{ workouts.page }} of {{ workouts.pages }}</span>
-            {% if workouts.has_next %}
-                <a style="padding-left:5px" href="{{ url_for('views.home', page=workouts.next_num) }}">Next</a>
+            <span>Page {{ upcoming_workouts.page }} of {{ upcoming_workouts.pages }}</span>
+            {% if upcoming_workouts.has_next %}
+                <a style="padding-left:5px" 
+                href="{{ url_for('views.home', past_page=past_workouts.page, upcoming_page=upcoming_workouts.next_num) }}">Next</a>
             {% endif %}
         </div>
+
     </div>
 
     <!-- Collapsible Add Workout Form (opens under the button) -->
@@ -76,7 +79,7 @@
                 </div>
                 <!-- Radio Buttons for Miles or Minutes -->
                 <div class="form-group">
-                    <label>Workout Length Unit:</label><br />
+                    <label>Workout Length Unit: </label>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="length_unit" id="minutesRadio" value="minutes" checked>
                         <label class="form-check-label" for="minutesRadio">Minutes</label>

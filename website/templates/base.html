@@ -37,6 +37,7 @@
           {% if user.is_authenticated %}
           <a class="nav-item nav-link" id="home" href="/">Workouts</a>
           <a class="nav-item nav-link" id="routines" href="/routines">Saved Routines</a>
+          <a class="nav-item nav-link" id="routines" href="/routines">Stats</a>
           {% else %}
           <a class="nav-item nav-link" id="login" href="/login">Login</a>
           <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
@@ -44,7 +45,7 @@
         </div>
         {% if user.is_authenticated %}
         <div class="navbar-nav ml-auto">
-          <a class="nav-item nav-link" id="logout" href="/logout">{{user.first_name}} - Logout</a>
+          <a class="nav-item nav-link" id="logout" href="/logout">{{user.first_name}} | Logout</a>
         </div>
         {% endif %}
       </div>
