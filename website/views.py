@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
+from flask import Blueprint, session, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 from .models import Workout
 from datetime import datetime, date
@@ -15,10 +15,15 @@ views = Blueprint('views', __name__)
 @login_required
 def home():
     today = date.today()
+
+  # Get pagination size from session, or default to 6 if not set
+    pagination_size = request.args.get("pagination_size", session.get('pagination_size', 6), type=int)
+    session['pagination_size'] = pagination_size  # Store the selected pagination size in session
+
+
     # Get page numbers for past and upcoming workouts separately
     past_page = request.args.get("past_page", 1, type=int)
     upcoming_page = request.args.get("upcoming_page", 1, type=int)
-    workouts_per_page = int(os.getenv("PAGINATION_SIZE", 6))  # Default to 6 if not set in .env
 
     # Query for past workouts (date < today) with pagination
     past_workouts = (
@@ -27,7 +32,7 @@ def home():
             Workout.date < today
         )
         .order_by(Workout.date.desc())
-        .paginate(page=past_page, per_page=workouts_per_page)
+        .paginate(page=past_page, per_page=pagination_size)
     )
 
     # Query for upcoming workouts (date >= today) with pagination
@@ -37,7 +42,7 @@ def home():
             Workout.date >= today
         )
         .order_by(Workout.date.asc())
-        .paginate(page=upcoming_page, per_page=workouts_per_page)
+        .paginate(page=upcoming_page, per_page=pagination_size)
     )
 
     # Handle form submission
@@ -78,6 +83,7 @@ def home():
         past_workouts=past_workouts,
         upcoming_workouts=upcoming_workouts,
         today=today,
+        pagination_size=pagination_size
     )
 
 @views.route('/delete-workout', methods=['POST'])

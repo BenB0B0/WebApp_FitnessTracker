@@ -4,15 +4,128 @@
 
 {% block content %}
 
-    <h3 align="left" style="margin-top:2%">Scheduled</h3>
-    <div class="container" style="background-color:#d3d3d330">
-        {% include "upcoming_workouts.html" %}
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <h2>Workouts</h2>
+        <div class="d-flex">
+            <span class="mr-2">List View</span> 
+            <label class="switch">
+                <input type="checkbox" id="toggleView">
+                <span class="slider"></span>
+            </label>
+
+            <select id="paginationSize" style="margin-left:10px" onchange="updatePaginationSize()">
+                <option value="6" {% if pagination_size == 6 %} selected {% endif %}>6</option>
+                <option value="9" {% if pagination_size == 9 %} selected {% endif %}>9</option>
+                <option value="30" {% if pagination_size == 30 %} selected {% endif %}>30</option>
+                <option value="50" {% if pagination_size == 50 %} selected {% endif %}>50</option>
+            </select>
+        </div>
+        
     </div>
 
-    <h3 align="left" style="margin-top:2%">History</h3>
-    <div class="container" style="background-color:#d3d3d330">
-        {% include "past_workouts.html" %}
+    <div id="cardView">
+        <h3 align="left" style="margin-top:2%">Scheduled</h3>
+        <div class="container" style="background-color:#d3d3d330">
+            {% include "upcoming_workouts.html" %}
+        </div>
+    
+        <h3 align="left" style="margin-top:2%">History</h3>
+        <div class="container" style="background-color:#d3d3d330">
+            {% include "past_workouts.html" %}
+        </div>
     </div>
     
+    <div id="cardViewList" style="display: none;">
+        <h3 align="left" style="margin-top:2%">Scheduled</h3>
+        <div class="container" style="background-color:#d3d3d330">
+            {% include "upcoming_workouts_listview.html" %}
+        </div>
     
+        <h3 align="left" style="margin-top:2%">History</h3>
+        <div class="container" style="background-color:#d3d3d330">
+            {% include "past_workouts_listview.html" %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let toggleSwitch = document.getElementById("toggleView");
+            let cardView = document.getElementById("cardView");
+            let cardViewList = document.getElementById("cardViewList");
+    
+            // Check localStorage for saved state
+            let savedView = localStorage.getItem("listViewEnabled");
+    
+            if (savedView === "true") {
+                toggleSwitch.checked = true;
+                cardView.style.display = "none";
+                cardViewList.style.display = "block";
+            } else {
+                toggleSwitch.checked = false;
+                cardView.style.display = "block";
+                cardViewList.style.display = "none";
+            }
+    
+            // Listen for toggle changes and update localStorage
+            toggleSwitch.addEventListener("change", function () {
+                if (this.checked) {
+                    cardView.style.display = "none";
+                    cardViewList.style.display = "block";
+                    localStorage.setItem("listViewEnabled", "true");
+                } else {
+                    cardView.style.display = "block";
+                    cardViewList.style.display = "none";
+                    localStorage.setItem("listViewEnabled", "false");
+                }
+            });
+        });
+
+        function updatePaginationSize() {
+            var size = document.getElementById("paginationSize").value;
+            window.location.href = window.location.pathname + '?pagination_size=' + size;
+        }
+    </script>
+
+    <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 25px;
+        }
+        .slider::before {
+            position: absolute;
+            content: "";
+            height: 19px;
+            width: 19px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+        input:checked + .slider::before {
+            transform: translateX(25px);
+        }
+    </style>
+
 {% endblock %}

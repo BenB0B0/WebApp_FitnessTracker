@@ -45,7 +45,7 @@
          <div>
             <a href="#pastWorkoutForm" class="btn btn-link p-0" data-toggle="collapse" aria-expanded="false" aria-controls="workoutForm" style="font-size: 14px; text-decoration: none; color: #007bff; display: flex; align-items: center;">
                 <i class="fas fa-plus-circle" style="margin-right: 5px; font-size: 16px;"></i>
-                <span>Add a Past Workout</span>
+                <span>Add</span>
             </a>
         </div>
     
@@ -53,12 +53,12 @@
         <div class="text-right">
             {% if past_workouts.has_prev %}
                 <a style="padding-right:5px" 
-                href="{{ url_for('views.home', past_page=past_workouts.prev_num, upcoming_page=upcoming_workouts.page) }}">Previous</a>
+                href="{{ url_for('views.home', past_page=past_workouts.prev_num, upcoming_page=upcoming_workouts.page, pagination_size=pagination_size) }}">Previous</a>
             {% endif %}
             <span>Page {{ past_workouts.page }} of {{ past_workouts.pages }}</span>
             {% if past_workouts.has_next %}
                 <a style="padding-left:5px" 
-                href="{{ url_for('views.home', past_page=past_workouts.next_num, upcoming_page=upcoming_workouts.page) }}">Next</a>
+                href="{{ url_for('views.home', past_page=past_workouts.next_num, upcoming_page=upcoming_workouts.page, pagination_size=pagination_size) }}">Next</a>
             {% endif %}
         </div>
 
