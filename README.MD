@@ -6,8 +6,9 @@
 ## __Project Reminders and Todos__
 
 ### TODO:
-- add list view
-- add routines
+- ~~add list view~~
+- add "routines" page
+- add "stats" page
 - mobilize
 - productionalize
 - cloud storage
